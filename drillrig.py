@@ -12,9 +12,9 @@ class Program:
 		
 		self.serialPort = serial.Serial(self.port, 9600)
 
-		Label(parent, text="Speed").grid(row=0, sticky=W)
-		Label(parent, text="Distance").grid(row=1, sticky=W)
-		Label(parent, text="Steps").grid(row=2, sticky=W)
+		Label(parent, text="Speed (*10um/s)").grid(row=0, sticky=W)
+		Label(parent, text="Distance (mm)").grid(row=1, sticky=W)
+		Label(parent, text="Steps (Down Only)").grid(row=2, sticky=W)
 
 		self.spd = Entry(parent)
 		self.dis = Entry(parent)
@@ -54,7 +54,7 @@ class Program:
 
 	def moveUp(self):
 		i = int(self.spd.get())
-		if i > 700:
+		if i > 500:
 			print "Can't Move That Fast!"
 		else:
 			text = "FU" + str(self.dis.get()) + "," + str(i) + ";"
