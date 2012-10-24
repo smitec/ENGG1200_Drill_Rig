@@ -1,6 +1,5 @@
 /*
 	Team Name - TXX XXXXXXXX
-
 */
 
 float read_angle_degrees() {
