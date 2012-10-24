@@ -16,6 +16,46 @@ int dir;
 unsigned long steps;
 unsigned int spd;
 int avg = 0;
+float inst;
+
+/*
+===================================================================================================================
+*/
+
+float read_angle_degrees() {
+  float angle = analogRead(A0);
+
+  /* Your Code Here */
+
+  /* ============== */
+
+  return angle;
+}
+
+
+float angle_to_torque_nm(float angle) {
+  float torque = 0;
+
+  /* Your Code Here */
+
+  /* ============== */
+
+  return torque;
+}
+
+float torque_to_shear_stress_mpa(float torque) {
+  float shearStress = 0;
+
+  /* Your Code Here */
+
+  /* ============== */
+
+  return shearStress;
+}
+
+/*
+===================================================================================================================
+*/
 
 void setup() {
   mode = 0;
@@ -55,7 +95,7 @@ void run_motor() {
   if (runTime >= 10) {
     long sum = 0;
     for (int i = 0; i < 10; i++) {
-      sum = sum + analogRead(0);
+      sum = sum + read_angle_degrees();
       delay(int(runTime/10));
     } 
     avg = sum/10;
@@ -75,6 +115,16 @@ void loop() {
       noTone(8);
     } else if (c == 'P') {
       Serial.print(avg);
+      Serial.print("A");
+    } else if (c == 'I') {
+      inst = read_angle_degrees();
+      Serial.print(inst);
+      inst = angle_to_torque_nm(inst);
+      Serial.print("A");
+      Serial.print(inst);
+      inst = torque_to_shear_stress_mpa(inst);
+      Serial.print("A");
+      Serial.print(inst);
       Serial.print("A");
     }
     
