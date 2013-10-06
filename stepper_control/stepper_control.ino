@@ -4,6 +4,7 @@ char c;
 
 int mode;
 
+
 int dir;
 unsigned int spd; // in um/sec
 int avg = 0;
@@ -12,7 +13,6 @@ float inst;
 void setup() {
   mode = 0;
   dir = 0;
-  steps = 0;
   spd = 0;
   Serial.begin(9600);
   pinMode(8, OUTPUT);
@@ -70,6 +70,5 @@ void loop() {
         mode = 1;
       }
     }
-  }
 }
 

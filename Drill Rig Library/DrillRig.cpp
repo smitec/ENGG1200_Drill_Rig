@@ -28,9 +28,20 @@ void DrillRig::initialise(uint baud) {
 	}
 }
 
-void DrillRig::send_feed_rate(uint rate) {
+void DrillRig::send_feed_rate(uint ratei, bool up) {
+    if (this->_mode == 0) {
 	this->send_uint(1);
 	this->send_uint(rate);
+    } else {
+        Serial.print('F');
+        if (up) {
+            Serial.print('U');
+        } else {
+            Serial.print('D');
+        }
+        Serial.print(ratei);
+        Serial.print(';');
+    }
 }
 
 void DrillRig::send_calculated_depth_mm(uint depth) {
