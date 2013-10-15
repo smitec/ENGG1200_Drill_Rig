@@ -1,6 +1,7 @@
 from Tkinter import *
 import serial
 import threading
+import time
 
 root = Tk()
 
@@ -42,10 +43,10 @@ class Program:
     def conn(self):
         self.port = self.com.get()
         self.serialPort = serial.Serial(self.port, 9600)
-        self.button_up['state'] = 'enabled'
-        self.button_down['state'] = 'enabled'
-        self.button_stop['state'] = 'enabled'
-        self.button_char['state'] = 'enabled'
+        self.button_up['state'] = 'active'
+        self.button_down['state'] = 'active'
+        self.button_stop['state'] = 'active'
+        self.button_char['state'] = 'active'
 
     def moveUp(self):
         i = int(self.spd.get())
@@ -70,19 +71,27 @@ class Program:
     def kill_drill(self):
         if self._timer != None:
             self._timer.cancel()
+            self.current = 999
         wr = self.serialPort.write(bytearray('K'))
 
     def head_char(self):
-        self._timer = Timer(4, self.send_next)
+        self.current = 0
+        self._timer = threading.Timer(4, self.send_next)
         self._timer.start()
 
     def send_next(self):
-        if self.current <= 10: 
-            i = self.speeds[self.current]
-            self.send_down_command(i)
-            self.current = self.current + 1
-        else:
-            self.kill_drill()
+        while 1:
+            if self.current <= 10: 
+                i = self.speeds[self.current]
+                print "Speed : "  + str(i*20) + " um/sec"
+                self.send_down_command(i)
+                self.current = self.current + 1
+                time.sleep(4)
+            else:
+                print "Done!"
+                self.kill_drill()
+                break
+            
 
 
 p = Program(root)

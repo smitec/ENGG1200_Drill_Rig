@@ -17,6 +17,8 @@ void setup() {
   Serial.begin(9600);
   pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  digitalWrite(10, LOW);
   delay(100);
 }
 
@@ -29,7 +31,9 @@ void run_motor() {
   }
 
   tone(8, int(46.72*spd));
-  
+  digitalWrite(10, LOW);
+  delay(100); 
+  digitalWrite(10, HIGH);
   Serial.print("A");
 }
 
@@ -39,6 +43,7 @@ void loop() {
     c = Serial.read();
     if (c == 'K') {
       noTone(8);
+      digitalWrite(10, LOW);
     } else if (mode > 0) {
       if (c == ';') {
         run_motor();
