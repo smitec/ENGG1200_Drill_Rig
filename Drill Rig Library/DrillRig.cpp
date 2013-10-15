@@ -1,5 +1,11 @@
 #include "DrillRig.h"
 
+/* TODO:
+	- end message
+	- density types
+*/
+
+
 DrillRig::DrillRig() {
 	this->_feed = 0;
 	this->_mode = -1;
@@ -10,37 +16,16 @@ void DrillRig::initialise(uint baud) {
 	
 	Serial.begin(baud);
 	
-	this->send_uint(0);
-	this->send_uint(0);
-	
-	mode = this->read_uint();
-	value = this->read_uint();
-	
-	if (mode == 0) {
-		//someone responded
-		if (value == 0) {
-			this->_mode = 0; //simulink mode;
-			digitalWrite(13, HIGH);
+	Serial.write('s')
+	wait_and_read();
+	this->_mode = 0
 
-		} else if (value == 1) {
-			this->_mode = 1; //real life mode? is this needed
-		}
-	}
 }
 
 void DrillRig::send_feed_rate(uint ratei, bool up) {
     if (this->_mode == 0) {
-	this->send_uint(1);
-	this->send_uint(rate);
-    } else {
-        Serial.print('F');
-        if (up) {
-            Serial.print('U');
-        } else {
-            Serial.print('D');
-        }
-        Serial.print(ratei);
-        Serial.print(';');
+		this->send_uint(1);
+		this->send_uint(rate);
     }
 }
 
