@@ -1,7 +1,9 @@
-from Tkinter import *
+from tkinter import *
 import serial
 import threading
 import time
+import os
+from serial.tools import list_ports
 
 root = Tk()
 
@@ -13,7 +15,11 @@ class Program:
         Label(parent, text="Speed (*20um/s)").grid(row=0, sticky=E)
         Label(parent, text="Serial Port (eg COM5)").grid(row=1, sticky=E)
 
-        self.com = Entry(parent)
+        self.com = Listbox(parent)
+
+        for i in list_serial_ports():
+            self.com.insert(END, i)
+        
         self.spd = Entry(parent)
 
         self.spd.grid(row=0, column=1, columnspan=3)
@@ -41,7 +47,7 @@ class Program:
         self.current = 0
 
     def conn(self):
-        self.port = self.com.get()
+        self.port = self.com.get(ACTIVE)
         self.serialPort = serial.Serial(self.port, 9600)
         self.button_up['state'] = 'active'
         self.button_down['state'] = 'active'
@@ -83,16 +89,33 @@ class Program:
         while 1:
             if self.current <= 10: 
                 i = self.speeds[self.current]
-                print "Speed : "  + str(i*20) + " um/sec"
+                print ("Speed : "  + str(i*20) + " um/sec")
                 self.send_down_command(i)
                 self.current = self.current + 1
                 time.sleep(4)
             else:
-                print "Done!"
+                print ("Done!")
                 self.kill_drill()
                 break
             
 
+def list_serial_ports():
+    # Windows
+    if os.name == 'nt':
+        # Scan for available ports.
+        available = []
+        for i in range(256):
+            try:
+                s = serial.Serial(i)
+                available.append('COM'+str(i + 1))
+                s.close()
+            except serial.SerialException:
+                pass
+        return available
+    else:
+        # Mac / Linux
+        return [port[0] for port in list_ports.comports()]
 
 p = Program(root)
 root.mainloop()
+print("ok")
