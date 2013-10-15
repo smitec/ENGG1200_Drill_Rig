@@ -15,20 +15,33 @@ class Program:
     def __init__(self, parent):
         self.parent = parent
 
-        Label(parent, text="Speed (*20um/s)").grid(row=0, sticky=E)
-        Label(parent, text="Serial Port (eg COM5)").grid(row=1, sticky=E)
+        # Group Input Box
+        Label(parent, text="Group: ").grid(row=0, column=0, columnspan=2, sticky=W+E)
+        self.groupName = Entry(parent)
 
-        self.com = Listbox(parent)
+        self.groupName.grid(row=0, column=2, columnspan=4, sticky=W+E)
 
-        for i in list_serial_ports():
-            self.com.insert(END, i)
+        # Com Port Selection Area
+        Label(parent, text="Student Arduino").grid(row=1, column=0, columnspan=3, sticky=E+W)
+        Label(parent, text="Drill Rig Arduino").grid(row=1, column=3, columnspan=3, sticky=E+W)
         
-        self.spd = Entry(parent)
+        self.com_students = Listbox(parent)
+        self.com_drillrig = Listbox(parent)
+        
+        for i in list_serial_ports():
+            self.com_students.insert(END, i)
+            self.com_drillrig.insert(END, i)
+        
+        self.com_students.grid(row=2, column=0, columnspan=3)
+        self.com_drillrig.grid(row=2, column=3, columnspan=3)
 
-        self.spd.grid(row=0, column=1, columnspan=3)
-        self.com.grid(row=1, column=1, columnspan=3)
+        self.button_connect_student = Button(parent, text="Connect", command=self.conn)
+        self.button_connect_drillrig = Button(parent, text="Connect", command=self.conn)
 
-        self.button_connect = Button(parent, text="Connect", command=self.conn)
+        self.button_connect_student.grid(row=3, column=0, columnspan=3, sticky=W+E)
+        self.button_connect_drillrig.grid(row=3, column=3, columnspan=3, sticky=W+E)
+
+        # Testing Area
         self.button_up = Button(parent, text="Up", command=self.moveUp)
         self.button_down = Button(parent, text="Down", command=self.moveDown)
         self.button_stop = Button(parent, text="Stop", command=self.kill_drill)
