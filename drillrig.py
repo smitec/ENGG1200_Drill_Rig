@@ -112,9 +112,10 @@ class Program:
         ba = bytearray("G")
         self.studentSerialPort.write(ba)
 
-        studentRunning = False
-        #magic :)
-        pass
+        studentRunning = True
+        self.demo = threading.Timer(4, self.run_demo)
+        self.log_message("Demo Day", "Student Control in 4 Seconds")
+        self.demo.start()
 
     def run_demo(self):
         self.studentSerialPort.timeout = None # set to blocking now we are in a thread
