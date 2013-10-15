@@ -15,33 +15,47 @@ class Program:
     def __init__(self, parent):
         self.parent = parent
 
-        # Group Input Box
-        Label(parent, text="Group: ").grid(row=0, column=0, columnspan=2, sticky=W+E)
+        # Group Input Box r 0
+        rowg = 0
+        Label(parent, text="Group: ").grid(row=rowg, column=0, columnspan=2, sticky=W+E, pady=10)
         self.groupName = Entry(parent)
 
-        self.groupName.grid(row=0, column=2, columnspan=4, sticky=W+E)
+        self.groupName.grid(row=rowg, column=2, columnspan=4, sticky=W+E)
+        rowg = rowg + 1
 
-        # Com Port Selection Area
-        Label(parent, text="Student Arduino").grid(row=1, column=0, columnspan=3, sticky=E+W)
-        Label(parent, text="Drill Rig Arduino").grid(row=1, column=3, columnspan=3, sticky=E+W)
+        # Com Port Selection Area r 1 - 3
+        rowcom=rowg
+
+        Label(parent, text="Select Serial Ports").grid(row=rowcom, column=0, columnspan=6, sticky=W+E, pady=10)
+        rowcom = rowcom+1
         
-        self.com_students = Listbox(parent)
-        self.com_drillrig = Listbox(parent)
+        Label(parent, text="Student Arduino").grid(row=rowcom, column=0, columnspan=3, sticky=E+W)
+        Label(parent, text="Drill Rig Arduino").grid(row=rowcom, column=3, columnspan=3, sticky=E+W)
+        rowcom = rowcom+1
+        
+        self.com_students = Listbox(parent, exportselection=0)
+        self.com_drillrig = Listbox(parent, exportselection=0)
         
         for i in list_serial_ports():
             self.com_students.insert(END, i)
             self.com_drillrig.insert(END, i)
         
-        self.com_students.grid(row=2, column=0, columnspan=3)
-        self.com_drillrig.grid(row=2, column=3, columnspan=3)
-
+        self.com_students.grid(row=rowcom, column=0, columnspan=3)
+        self.com_drillrig.grid(row=rowcom, column=3, columnspan=3)
+        rowcom = rowcom+1
+        
         self.button_connect_student = Button(parent, text="Connect", command=self.conn)
         self.button_connect_drillrig = Button(parent, text="Connect", command=self.conn)
 
-        self.button_connect_student.grid(row=3, column=0, columnspan=3, sticky=W+E)
-        self.button_connect_drillrig.grid(row=3, column=3, columnspan=3, sticky=W+E)
-
-        # Testing Area
+        self.button_connect_student.grid(row=rowcom, column=0, columnspan=3, sticky=W+E)
+        self.button_connect_drillrig.grid(row=rowcom, column=3, columnspan=3, sticky=W+E)
+        rowcom = rowcom+1
+        
+        # Testing Area r 4 - 6
+        rowtest=rowcom
+        Label(parent, text="Testing").grid(row=rowtest, column=0, columnspan=6, sticky=W+E, pady=10)
+        rowtest=rowtest+1
+        
         self.button_up = Button(parent, text="Up", command=self.moveUp)
         self.button_down = Button(parent, text="Down", command=self.moveDown)
         self.button_stop = Button(parent, text="Stop", command=self.kill_drill)
@@ -52,12 +66,14 @@ class Program:
         self.button_stop['state'] = 'disabled'
         self.button_char['state'] = 'disabled'
 
-        self.button_connect.grid(row=3, column=0, sticky=W+E)
-        self.button_up.grid(row=3, column=1, sticky=W+E)
-        self.button_down.grid(row=3, column=2, sticky=W+E)
-        self.button_stop.grid(row=3, column=3, sticky=W+E)
-        self.button_char.grid(row=4, column=0, columnspan=4, sticky=W+E)
-
+        self.button_up.grid(row=rowtest, column=0, columnspan=2, sticky=W+E)
+        self.button_down.grid(row=rowtest, column=2, columnspan=2, sticky=W+E)
+        self.button_stop.grid(row=rowtest, column=4, columnspan=2, sticky=W+E)
+        rowtest=rowtest+1
+        
+        self.button_char.grid(row=rowtest, column=0, columnspan=6, sticky=W+E)
+        rowtest=rowtest+1
+        
         self._timer = None
         self.speeds = range(10, 120, 10)
         self.current = 0
