@@ -16,13 +16,13 @@ void DrillRig::initialise(uint baud) {
 	
 	Serial.begin(baud);
 	
-	Serial.write('s')
+	Serial.write('s');
 	wait_and_read();
-	this->_mode = 0
+	this->_mode = 0;
 
 }
 
-void DrillRig::send_feed_rate(uint ratei, bool up) {
+void DrillRig::send_feed_rate(uint rate, uint up) {
     if (this->_mode == 0) {
 		this->send_uint(1);
 		this->send_uint(rate);
@@ -58,8 +58,8 @@ uint DrillRig::read_uint() {
 }
 
 void DrillRig::send_uint(uint data) {
-	Serial.write((uint)(data & 0xFF));
-	Serial.write((uint)((data >> 8) & 0xFF));
+	Serial.write((unsigned char)(data & 0xFF));
+	Serial.write((unsigned char)((data >> 8) & 0xFF));
 }
 
 unsigned char DrillRig::wait_and_read() {

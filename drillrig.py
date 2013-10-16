@@ -24,6 +24,8 @@ class Program:
         rowg = rowg + 1
 
         # Com Port Selection Area r 1 - 3
+        self.studeSerialPot = None
+        self.drillSerialPort = None
         rowcom=rowg
 
         Label(parent, text="Select Serial Ports").grid(row=rowcom, column=0, columnspan=6, sticky=W+E, pady=10)
@@ -91,6 +93,8 @@ class Program:
 
         rowdemo = rowdemo+1
 
+        self.demo = None
+
         # message log
         rowmessage = rowdemo
 
@@ -108,28 +112,31 @@ class Program:
         self.messageLog.insert(END, sender+ " : " + message + "\n")
 
     def start_demo(self):
-        #send a command so it starts
-        ba = bytearray("G")
-        self.studentSerialPort.write(ba)
-
-        studentRunning = True
+        self.studentRunning = True
         self.demo = threading.Timer(4, self.run_demo)
         self.log_message("Demo Day", "Student Control in 4 Seconds")
         self.demo.start()
 
     def run_demo(self):
-        self.studentSerialPort.timeout = None # set to blocking now we are in a thread
+        self.log_message("Student Control", "Started")
+
+        ba = bytearray('G')
+        self.studentSerialPort.write(ba)
+        self.studentSerialPort.read(1)
 
         while self.studentRunning:
             bt = self.studentSerialPort.read(4)
-
+            
             #we blocked so double check the conditions
-            if !self.studentRunning:
+            if self.studentRunning == False:
                 break
 
+            if len(bt) != 4:
+                continue
+
             #convert to two ints
-            a = 0xFFFF & (bt(0) & (bt(1) << 8))
-            b = 0xFFFF & (bt(2) & (bt(3) << 8))
+            a =  ord(bt[0]) + (ord(bt[1])<< 8)
+            b =   ord(bt[2]) + (ord(bt[3]) << 8)
 
             self.log_message("Student Serial", "Got " + str(a) + "  " + str(b))
 
@@ -142,14 +149,14 @@ class Program:
             elif a == 4:
                 self.log_message("Student Code", "Sent Density")
             else:
-                self.log_mesage("Student Code", "Sent Rubbish")
+                self.log_message("Student Code", "Sent Rubbish")
             
 
     def connect_to_serial(self, student):
         if student:
             self.studentPort = self.comboStudent.get(ACTIVE)
             self.studentSerialPort = serial.Serial(self.studentPort, 9600, timeout=1)
-            c = self.drillSerialPort.read(1)
+            c = self.studentSerialPort.read(1)
             if c == 's':
                 # it's a student arduino 
                 self.log_message("Connections", "Student Arduino Connected")
@@ -190,12 +197,18 @@ class Program:
         self.log_message("Drill Control", "Moving Down @ " + str(i*20) + " um/sec (" + str(i) + ")")
 
     def kill_drill(self):
+        if self.demo != None:
+            self.demo.cancel()
+            self.studentRunning = False
+            self.studentSerialPort.timeout = 2
+
         if self._timer != None:
             self._timer.cancel()
             self.current = 999
             self.studentRunning = False
             
-        wr = self.drillSerialPort.write(bytearray('K'))
+        if self.drillSerialPort != None:
+            wr = self.drillSerialPort.write(bytearray('K'))
         self.log_message("Drill Control", "Stopping Drill")
 
     def head_char(self):
