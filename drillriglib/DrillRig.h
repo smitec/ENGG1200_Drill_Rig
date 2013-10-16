@@ -3,6 +3,9 @@
 
 #include "Arduino.h"
 
+#define RED 800
+#define BLUE 600
+
 typedef unsigned int uint;
 
 class DrillRig {

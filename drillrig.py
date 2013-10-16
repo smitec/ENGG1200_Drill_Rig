@@ -94,6 +94,7 @@ class Program:
         rowdemo = rowdemo+1
 
         self.demo = None
+        self.logFile = None
 
         # message log
         rowmessage = rowdemo
@@ -108,6 +109,10 @@ class Program:
 
         rowmessage = rowmessage+1
 
+        #Canvas?
+        self.graph = Canvas(parent, width=400, height=500)
+        #self.graph.grid(row=0, column=6, rowspan=rowmessage-1) 
+
     def log_message(self, sender, message):
         self.messageLog.insert(END, sender+ " : " + message + "\n")
 
@@ -119,6 +124,10 @@ class Program:
 
     def run_demo(self):
         self.log_message("Student Control", "Started")
+
+        group = self.groupName.get()
+
+        self.logFile = open(group + ".txt", "w")
 
         ba = bytearray('G')
         self.studentSerialPort.write(ba)
@@ -142,16 +151,26 @@ class Program:
 
             if a == 1:
                 self.log_message("Student Code", "Sent Feed Rate")
+                if b <= 110:
+                    self.send_down_command(b)
+                else:
+                    self.log_message("ERROR", "Students Cannot Exceed 110")
             elif a == 2:
                 self.log_message("Student Code", "Sent Depth")
+                self.logFile.write("d:"+str(b)+"\n")
             elif a == 3:
                 self.log_message("Student Code", "Sent Torque")
+                self.logFile.write("t:"+str(b/1000.0)+"\n")
             elif a == 4:
                 self.log_message("Student Code", "Sent Density")
+                self.logFile.write("m:"+str(b)+"\n")
+            elif a == 5: #end of demo message
+                self.log_message("Student Code", "Sent End")
+                self.kill_drill()
             else:
                 self.log_message("Student Code", "Sent Rubbish")
+                #laugh
             
-
     def connect_to_serial(self, student):
         if student:
             self.studentPort = self.comboStudent.get(ACTIVE)
@@ -201,6 +220,9 @@ class Program:
             self.demo.cancel()
             self.studentRunning = False
             self.studentSerialPort.timeout = 2
+            if self.logFile != None:
+                self.logFile.close()
+                self.logFile = None
 
         if self._timer != None:
             self._timer.cancel()
