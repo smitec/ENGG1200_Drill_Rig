@@ -1,10 +1,5 @@
 #include "DrillRig.h"
 
-/* TODO:
-	- end message
-	- density types
-*/
-
 
 DrillRig::DrillRig() {
 	this->_feed = 0;
@@ -22,7 +17,12 @@ void DrillRig::initialise(uint baud) {
 
 }
 
-void DrillRig::send_feed_rate(uint rate, uint up) {
+void DrillRig::send_stop_command() {
+    this->send_uint(5);
+    this->send_uint(0);
+}
+
+void DrillRig::send_feed_rate(uint rate) {
     if (this->_mode == 0) {
 		this->send_uint(1);
 		this->send_uint(rate);
