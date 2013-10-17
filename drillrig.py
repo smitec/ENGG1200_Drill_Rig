@@ -153,17 +153,18 @@ class Program:
                 self.log_message("Student Code", "Sent Feed Rate")
                 if b <= 110:
                     #self.send_down_command(b)
+                    self.og_message("Student Code", "Setting Feed to: " + str(b))
                     pass
                 else:
                     self.log_message("ERROR", "Students Cannot Exceed 110")
             elif a == 2:
-                self.log_message("Student Code", "Sent Depth")
+                self.log_message("Student Code", "Sent Depth (" + str(b) + ")")
                 self.logFile.write("d:"+str(b)+"\n")
             elif a == 3:
-                self.log_message("Student Code", "Sent Torque")
+                self.log_message("Student Code", "Sent Torque(" + str(b/1000.0) + ")")
                 self.logFile.write("t:"+str(b/1000.0)+"\n")
             elif a == 4:
-                self.log_message("Student Code", "Sent Density")
+                self.log_message("Student Code", "Sent Density (" + str(b) + ")")
                 self.logFile.write("m:"+str(b)+"\n")
             elif a == 5: #end of demo message
                 self.log_message("Student Code", "Sent End")
