@@ -95,6 +95,7 @@ class Program:
 
         self.demo = None
         self.logFile = None
+        self.auto_kill = None
 
         # message log
         rowmessage = rowdemo
@@ -133,6 +134,10 @@ class Program:
         self.studentSerialPort.write(ba)
         self.studentSerialPort.read(1)
 
+        current_depth = 0
+        start_time = current_time = time.time()
+        current_speed = 0
+
         while self.studentRunning:
             bt = self.studentSerialPort.read(4)
             
@@ -153,7 +158,22 @@ class Program:
                 self.log_message("Student Code", "Sent Feed Rate")
                 if b <= 110:
                     #self.send_down_command(b)
-                    self.og_message("Student Code", "Setting Feed to: " + str(b))
+                    #set a timer for (200-depth)/speed so it kills the drill when it needs to
+                    current_time = time.time()
+                    current_depth = 0.2*current_speed*(current_time - start_time) + current_depth
+                    start_time = current_time
+                    current_speed = b
+
+                    depth_remaining = 200 - current_depth
+                    time_needed = depth_remaining/(0.2*current_speed)
+
+                    if (self.auto_kill != None):
+                        self.auto_kill.cancel()
+                        self.auto_kill = None
+
+                    self.auto_kill = threading.Timer(time_needed, self.kill_dill)
+
+                    self.log_message("Student Code", "Setting Feed to: " + str(b))
                     pass
                 else:
                     self.log_message("ERROR", "Students Cannot Exceed 110")
@@ -168,7 +188,7 @@ class Program:
                 self.logFile.write("m:"+str(b)+"\n")
             elif a == 5: #end of demo message
                 self.log_message("Student Code", "Sent End")
-                self.logFioe.write("e:0\n")
+                self.logFile.write("e:0\n")
                 self.kill_drill()
             else:
                 self.log_message("Student Code", "Sent Rubbish")
